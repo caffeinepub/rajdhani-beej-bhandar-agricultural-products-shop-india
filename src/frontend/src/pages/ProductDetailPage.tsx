@@ -8,12 +8,19 @@ import LoadingState from '../components/system/LoadingState';
 import ErrorState from '../components/system/ErrorState';
 import { ProductImageGallery } from '../components/products/ProductImageGallery';
 import { OrderNowDialog } from '../components/orders/OrderNowDialog';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, MessageCircle } from 'lucide-react';
+import { openWhatsAppChat } from '../utils/whatsapp';
 
 export default function ProductDetailPage() {
   const { productId } = useParams({ strict: false }) as { productId: string };
   const { t } = useI18n();
   const { data: product, isLoading, error } = useGetProduct(productId);
+
+  const handleWhatsAppEnquiry = () => {
+    if (!product) return;
+    const message = t('whatsapp.productEnquiry').replace('{productName}', product.name);
+    openWhatsAppChat(message);
+  };
 
   if (isLoading) {
     return (
@@ -75,7 +82,18 @@ export default function ProductDetailPage() {
             <p className="text-muted-foreground whitespace-pre-wrap">{product.description}</p>
           </div>
 
-          <OrderNowDialog product={product} />
+          <div className="space-y-3">
+            <OrderNowDialog product={product} />
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="w-full border-2 border-green-600 text-green-700 hover:bg-green-50 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-950/20"
+              onClick={handleWhatsAppEnquiry}
+            >
+              <MessageCircle className="mr-2 h-5 w-5" />
+              {t('product.whatsappEnquiry')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

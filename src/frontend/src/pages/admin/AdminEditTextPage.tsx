@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +11,7 @@ import { SUPPORTED_LANGUAGES } from '../../i18n/i18n';
 import { useGetLandingPageTranslations, useUpdateLandingPageTranslation } from '../../hooks/translations/useLandingPageTranslations';
 import { useGetAllProducts } from '../../hooks/products/useProducts';
 import { useUpdateProductTranslations } from '../../hooks/translations/useProductTranslations';
+import { useGetAboutUs, useUpdateAboutUsTranslation } from '../../hooks/translations/useAboutUsTranslations';
 import LoadingState from '../../components/system/LoadingState';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
@@ -25,13 +27,18 @@ export default function AdminEditTextPage() {
       </div>
 
       <Tabs defaultValue="hero">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="hero">Hero Section</TabsTrigger>
+          <TabsTrigger value="about">About Us</TabsTrigger>
           <TabsTrigger value="products">Product Translations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hero" className="mt-6">
           <HeroTranslationEditor />
+        </TabsContent>
+
+        <TabsContent value="about" className="mt-6">
+          <AboutUsTranslationEditor />
         </TabsContent>
 
         <TabsContent value="products" className="mt-6">
@@ -129,6 +136,104 @@ function HeroTranslationEditor() {
 
           <Button type="submit" disabled={updateTranslation.isPending}>
             {updateTranslation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Save className="mr-2 h-4 w-4" />
+            Save Changes
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AboutUsTranslationEditor() {
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const { data: aboutUs, isLoading } = useGetAboutUs();
+  const updateAboutUs = useUpdateAboutUsTranslation();
+  const { t } = useI18n();
+
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+  });
+
+  // Update form when language changes
+  React.useEffect(() => {
+    if (aboutUs) {
+      const titleEntry = aboutUs.title.find(([lang]) => lang === selectedLanguage);
+      const contentEntry = aboutUs.content.find(([lang]) => lang === selectedLanguage);
+      
+      setFormData({
+        title: titleEntry?.[1] || (selectedLanguage === 'en' ? t('about.title') : ''),
+        content: contentEntry?.[1] || (selectedLanguage === 'en' ? t('about.defaultContent') : ''),
+      });
+    }
+  }, [selectedLanguage, aboutUs, t]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateAboutUs.mutateAsync({
+        language: selectedLanguage,
+        title: formData.title,
+        content: formData.content,
+      });
+      toast.success('About Us translations updated successfully');
+    } catch (error) {
+      toast.error('Failed to update About Us translations');
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>About Us Translations</CardTitle>
+        <CardDescription>Edit the About Us section content for each language</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label htmlFor="aboutLanguage">Language</Label>
+            <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.nativeName} ({lang.name})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="aboutTitle">About Us Title</Label>
+            <Input
+              id="aboutTitle"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="About Rajdhani Beej Bhandar"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="aboutContent">About Us Content</Label>
+            <Textarea
+              id="aboutContent"
+              value={formData.content}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              placeholder="Enter the About Us content..."
+              rows={8}
+            />
+          </div>
+
+          <Button type="submit" disabled={updateAboutUs.isPending}>
+            {updateAboutUs.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Save className="mr-2 h-4 w-4" />
             Save Changes
           </Button>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -6,10 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useInternetIdentity } from '../../hooks/useInternetIdentity';
-import { useQueryClient } from '@tanstack/react-query';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAdminSession } from '../../hooks/auth/useAdminSession';
 import { useI18n } from '../../i18n/I18nProvider';
-import { Loader2, ShieldCheck } from 'lucide-react';
+import { Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AdminLoginModalProps {
   open: boolean;
@@ -17,31 +20,29 @@ interface AdminLoginModalProps {
 }
 
 export function AdminLoginModal({ open, onOpenChange }: AdminLoginModalProps) {
-  const { login, clear, loginStatus, identity } = useInternetIdentity();
-  const queryClient = useQueryClient();
+  const { login, logout, isAuthenticated, isLoggingIn, isLoggingOut, loginError } = useAdminSession();
   const { t } = useI18n();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const isAuthenticated = !!identity;
-  const isLoading = loginStatus === 'logging-in' || loginStatus === 'initializing';
-
-  const handleAuth = async () => {
-    if (isAuthenticated) {
-      await clear();
-      queryClient.clear();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await login(username, password);
+      setUsername('');
+      setPassword('');
       onOpenChange(false);
-    } else {
-      try {
-        await login();
-        onOpenChange(false);
-      } catch (error: any) {
-        console.error('Login error:', error);
-        if (error.message === 'User is already authenticated') {
-          await clear();
-          setTimeout(() => login(), 300);
-        }
-      }
+    } catch (error) {
+      // Error is handled by the hook
     }
   };
+
+  const handleLogout = async () => {
+    await logout();
+    onOpenChange(false);
+  };
+
+  const isLoading = isLoggingIn || isLoggingOut;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -49,26 +50,76 @@ export function AdminLoginModal({ open, onOpenChange }: AdminLoginModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            {t('footer.admin')}
+            {t('admin.loginRequired')}
           </DialogTitle>
           <DialogDescription>
             {isAuthenticated 
-              ? 'You are currently logged in as an admin. Click below to log out.'
-              : 'Admin access is required to manage products, orders, and site content. Please log in using Internet Identity.'}
+              ? t('admin.loggedInDescription')
+              : t('admin.loginDescription')}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <Button
-            onClick={handleAuth}
-            disabled={isLoading}
-            variant={isAuthenticated ? 'outline' : 'default'}
-            size="lg"
-            className="w-full"
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isAuthenticated ? t('admin.logout') : t('admin.login')}
-          </Button>
-        </div>
+
+        {isAuthenticated ? (
+          <div className="flex flex-col gap-4 py-4">
+            <Button
+              onClick={handleLogout}
+              disabled={isLoading}
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
+              {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('admin.logout')}
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleLogin} className="flex flex-col gap-4 py-4">
+            {loginError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {loginError.message || t('admin.loginError')}
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="username">{t('admin.username')}</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t('admin.usernamePlaceholder')}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">{t('admin.password')}</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('admin.passwordPlaceholder')}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              size="lg"
+              className="w-full"
+            >
+              {isLoggingIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('admin.login')}
+            </Button>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

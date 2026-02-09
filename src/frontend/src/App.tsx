@@ -17,7 +17,10 @@ import AdminEditTextPage from './pages/admin/AdminEditTextPage';
 import AdminEditImagesPage from './pages/admin/AdminEditImagesPage';
 import AdminGalleryPage from './pages/admin/AdminGalleryPage';
 import ReferenceWebsitePage from './pages/admin/ReferenceWebsitePage';
+import AdminAgentsPage from './pages/admin/AdminAgentsPage';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
+import AgentOrdersPage from './pages/agent/AgentOrdersPage';
+import AgentRouteGuard from './components/agent/AgentRouteGuard';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -87,6 +90,16 @@ const adminOrdersRoute = createRoute({
   ),
 });
 
+const adminAgentsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/agents',
+  component: () => (
+    <AdminRouteGuard>
+      <AdminAgentsPage />
+    </AdminRouteGuard>
+  ),
+});
+
 const adminPlannedRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/planned',
@@ -137,6 +150,16 @@ const adminReferenceWebsiteRoute = createRoute({
   ),
 });
 
+const agentOrdersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/agent/orders',
+  component: () => (
+    <AgentRouteGuard>
+      <AgentOrdersPage />
+    </AgentRouteGuard>
+  ),
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productsRoute,
@@ -146,11 +169,13 @@ const routeTree = rootRoute.addChildren([
   adminDashboardRoute,
   adminProductsRoute,
   adminOrdersRoute,
+  adminAgentsRoute,
   adminPlannedRoute,
   adminEditTextRoute,
   adminEditImagesRoute,
   adminGalleryRoute,
   adminReferenceWebsiteRoute,
+  agentOrdersRoute,
 ]);
 
 const router = createRouter({ routeTree });

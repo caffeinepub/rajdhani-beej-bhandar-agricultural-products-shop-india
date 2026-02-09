@@ -2,7 +2,6 @@ import Array "mo:core/Array";
 import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 import Map "mo:core/Map";
-import Migration "migration";
 import Nat "mo:core/Nat";
 import Order "mo:core/Order";
 import Set "mo:core/Set";
@@ -13,18 +12,38 @@ import Runtime "mo:core/Runtime";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
-(with migration = Migration.run)
+
+
 actor {
-  public type ReferenceWebsite = {
-    url : Text;
-    designNotes : ?Text;
-  };
+  type Translations = Map.Map<Text, Text>;
 
-  var referenceWebsite : ?ReferenceWebsite = null;
-
-  let supportedLanguages = Set.fromIter(["en", "hi", "ta", "te", "kn", "gu", "mr", "pa", "bn"].values());
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  public type ReferenceWebsite = {
+    url : Text;
+    description : Text;
+  };
+
+  public type AboutUsContentTranslations = {
+    title : Translations;
+    content : Translations;
+  };
+
+  public type AboutUsContentTranslationsView = {
+    title : [(Text, Text)];
+    content : [(Text, Text)];
+  };
+
+  func defaultReferenceWebsite() : ReferenceWebsite {
+    {
+      url = "";
+      description = "";
+    };
+  };
+
+  var referenceWebsite : ?ReferenceWebsite = ?defaultReferenceWebsite();
+  let supportedLanguages = Set.fromIter(["en", "hi", "ta", "te", "kn", "gu", "mr", "pa", "bn"].values());
 
   public type Category = {
     #fungicide;
@@ -33,11 +52,13 @@ actor {
     #pesticide;
     #plantGrowthRegulator;
     #seed;
+    #machine;
+    #kitchenGarden;
   };
 
   public type ProductTranslations = {
-    name : Map.Map<Text, Text>;
-    description : Map.Map<Text, Text>;
+    name : Translations;
+    description : Translations;
   };
 
   public type Product = {
@@ -92,6 +113,12 @@ actor {
     };
   };
 
+  public type ProductType = {
+    #agriProduct;
+    #machine;
+    #kitchenGarden;
+  };
+
   public type CustomerOrder = {
     id : Text;
     productId : Text;
@@ -104,6 +131,7 @@ actor {
     totalAmount : Nat;
     productName : Text;
     productSummary : Text;
+    productType : ProductType;
   };
 
   public type CustomerOrderInput = {
@@ -112,11 +140,12 @@ actor {
     customerName : Text;
     customerAddress : Text;
     customerMobile : Text;
+    productType : ProductType;
   };
 
   public type LandingPageTranslations = {
-    heroTitle : Map.Map<Text, Text>;
-    heroSubtitle : Map.Map<Text, Text>;
+    heroTitle : Translations;
+    heroSubtitle : Translations;
   };
 
   public type LandingPageTranslationsView = {
@@ -135,14 +164,38 @@ actor {
     name : Text;
   };
 
+  public type Agent = {
+    username : Text;
+    mobileNumber : Text;
+    password : Text;
+    agentRole : Text;
+    principal : Principal;
+  };
+
+  public type AgentInput = {
+    username : Text;
+    mobileNumber : Text;
+    password : Text;
+    agentRole : Text;
+  };
+
   let products = Map.empty<Text, Product>();
   let customerOrders = Map.empty<Text, CustomerOrder>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+  let agents = Map.empty<Text, Agent>();
+  let agentPrincipals = Map.empty<Principal, Text>();
 
   let landingPageTranslations : LandingPageTranslations = {
     heroTitle = Map.empty<Text, Text>();
     heroSubtitle = Map.empty<Text, Text>();
   };
+
+  var aboutUsContent : ?AboutUsContentTranslations = ?{
+    title = Map.empty<Text, Text>();
+    content = Map.empty<Text, Text>();
+  };
+
+  let adminSessionToken : Text = "QOCb5ncoyBmax3denemyuw3phcymdpFE";
 
   func toImmutableMap<K, V>(map : Map.Map<K, V>) : ImmutableMap<K, V> {
     { entries = map.toArray() };
@@ -171,17 +224,21 @@ actor {
     };
   };
 
-  public shared ({ caller }) func setReferenceWebsite(reference : ReferenceWebsite) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can set reference website");
+  func toAboutUsContentTranslationsView(content : AboutUsContentTranslations) : AboutUsContentTranslationsView {
+    {
+      title = content.title.toArray();
+      content = content.content.toArray();
+    };
+  };
+
+  public shared ({ caller }) func setReferenceWebsite(adminSessionToken_ : Text, reference : ReferenceWebsite) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     referenceWebsite := ?reference;
   };
 
-  public query ({ caller }) func getReferenceWebsite() : async ?ReferenceWebsite {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can view reference website");
-    };
+  public query ({ caller }) func getReferenceWebsite(_ : Text) : async ?ReferenceWebsite {
     referenceWebsite;
   };
 
@@ -201,9 +258,9 @@ actor {
     };
   };
 
-  public query ({ caller }) func getOrdersByStatus(status : OrderStatus) : async [CustomerOrder] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can view orders");
+  public query ({ caller }) func getOrdersByStatus(adminSessionToken_ : Text, status : OrderStatus) : async [CustomerOrder] {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     let filteredOrders = customerOrders.toArray().filter(
       func((_, order)) {
@@ -213,9 +270,9 @@ actor {
     filteredOrders.map(func((_, order)) { order });
   };
 
-  public query ({ caller }) func getCustomerOrder(orderId : Text) : async ?CustomerOrder {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can view order details");
+  public query ({ caller }) func getCustomerOrder(adminSessionToken_ : Text, orderId : Text) : async ?CustomerOrder {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     customerOrders.get(orderId);
   };
@@ -245,9 +302,9 @@ actor {
     toLandingPageTranslationsView(landingPageTranslations);
   };
 
-  public shared ({ caller }) func updateLandingPageTranslation(language : Text, title : Text, subtitle : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can update translations");
+  public shared ({ caller }) func updateLandingPageTranslation(adminSessionToken_ : Text, language : Text, title : Text, subtitle : Text) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
 
     switch (supportedLanguages.contains(language)) {
@@ -259,6 +316,41 @@ actor {
     landingPageTranslations.heroSubtitle.add(language, subtitle);
   };
 
+  public shared ({ caller }) func updateAboutUsTranslation(
+    adminSessionToken_ : Text,
+    language : Text,
+    title : Text,
+    content : Text,
+  ) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+
+    switch (supportedLanguages.contains(language)) {
+      case (true) {};
+      case (false) { Runtime.trap("Language not supported: " # language) };
+    };
+
+    let current = switch (aboutUsContent) {
+      case (null) {
+        Runtime.trap("Missing About Us content");
+      };
+      case (?content) {
+        content;
+      };
+    };
+
+    current.title.add(language, title);
+    current.content.add(language, content);
+  };
+
+  public query ({ caller }) func getAboutUs(_ : Text) : async ?AboutUsContentTranslationsView {
+    switch (aboutUsContent) {
+      case (null) { null };
+      case (?content) { ?toAboutUsContentTranslationsView(content) };
+    };
+  };
+
   public query ({ caller }) func getProductTranslations(_ : Text, productId : Text) : async ?ProductView {
     switch (products.get(productId)) {
       case (?product) { ?toProductView(product) };
@@ -267,13 +359,14 @@ actor {
   };
 
   public shared ({ caller }) func updateProductTranslations(
+    adminSessionToken_ : Text,
     productId : Text,
     language : Text,
     name : Text,
     description : Text,
   ) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can update translations");
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
 
     switch (products.get(productId)) {
@@ -302,9 +395,9 @@ actor {
     };
   };
 
-  public shared ({ caller }) func createProduct(productInput : ProductInput) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can create products");
+  public shared ({ caller }) func createProduct(adminSessionToken_ : Text, productInput : ProductInput) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     if (products.containsKey(productInput.id)) {
       Runtime.trap("Product with that ID already exists");
@@ -313,9 +406,9 @@ actor {
     products.add(productInput.id, product);
   };
 
-  public shared ({ caller }) func updateProduct(productId : Text, productInput : ProductInput) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can update products");
+  public shared ({ caller }) func updateProduct(adminSessionToken_ : Text, productId : Text, productInput : ProductInput) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     if (not products.containsKey(productId)) {
       Runtime.trap("Product with ID " # productId # " does not exist");
@@ -324,9 +417,9 @@ actor {
     products.add(productId, product);
   };
 
-  public shared ({ caller }) func deleteProduct(productId : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can delete products");
+  public shared ({ caller }) func deleteProduct(adminSessionToken_ : Text, productId : Text) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     if (not products.containsKey(productId)) {
       Runtime.trap("Product with ID " # productId # " does not exist");
@@ -370,15 +463,16 @@ actor {
         case (?english) { english };
         case (null) { "" };
       };
+      productType = customerOrder.productType;
     };
 
     customerOrders.add(order.id, order);
     ?order;
   };
 
-  public shared ({ caller }) func updateOrderStatus(orderId : Text, newStatus : OrderStatus) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can update order status");
+  public shared ({ caller }) func updateOrderStatus(adminSessionToken_ : Text, orderId : Text, newStatus : OrderStatus) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
     };
     let order = switch (customerOrders.get(orderId)) {
       case (null) {
@@ -398,7 +492,124 @@ actor {
       totalAmount = order.totalAmount;
       productName = order.productName;
       productSummary = order.productSummary;
+      productType = order.productType;
     };
     customerOrders.add(orderId, updatedOrder);
+  };
+
+  // Agent CRUD implementation - Admin only
+  public shared ({ caller }) func createAgent(adminSessionToken_ : Text, agentInput : AgentInput, agentPrincipal : Principal) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+
+    if (agents.containsKey(agentInput.mobileNumber)) {
+      Runtime.trap("Agent with this mobile number already exists");
+    };
+
+    agents.add(agentInput.mobileNumber, {
+      username = agentInput.username;
+      mobileNumber = agentInput.mobileNumber;
+      password = agentInput.password;
+      agentRole = agentInput.agentRole;
+      principal = agentPrincipal;
+    });
+
+    agentPrincipals.add(agentPrincipal, agentInput.mobileNumber);
+  };
+
+  public shared ({ caller }) func updateAgent(adminSessionToken_ : Text, mobileNumber : Text, updatedAgent : AgentInput) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+
+    let existingAgent = switch (agents.get(mobileNumber)) {
+      case (null) {
+        Runtime.trap("Agent not found");
+      };
+      case (?agent) { agent };
+    };
+
+    agents.add(
+      mobileNumber,
+      {
+        username = updatedAgent.username;
+        mobileNumber = updatedAgent.mobileNumber;
+        password = updatedAgent.password;
+        agentRole = updatedAgent.agentRole;
+        principal = existingAgent.principal;
+      },
+    );
+  };
+
+  public shared ({ caller }) func deleteAgent(adminSessionToken_ : Text, mobileNumber : Text) : async () {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+
+    let agent = switch (agents.get(mobileNumber)) {
+      case (null) {
+        Runtime.trap("Agent not found");
+      };
+      case (?agent) { agent };
+    };
+
+    agents.remove(mobileNumber);
+    agentPrincipals.remove(agent.principal);
+  };
+
+  public query ({ caller }) func getAgent(adminSessionToken_ : Text, mobileNumber : Text) : async ?Agent {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+    agents.get(mobileNumber);
+  };
+
+  public query ({ caller }) func getAllAgents(adminSessionToken_ : Text) : async [Agent] {
+    if (adminSessionToken_ != adminSessionToken) {
+      Runtime.trap("Authorization failed: Invalid admin session token");
+    };
+    agents.values().toArray();
+  };
+
+  // Agent Login - returns success/failure, authentication is via Internet Identity
+  public shared ({ caller }) func agentLogin(mobileNumber : Text, password : Text) : async Bool {
+    switch (agents.get(mobileNumber)) {
+      case (null) {
+        false;
+      };
+      case (?agent) {
+        if (agent.password == password and agent.principal == caller) {
+          true;
+        } else { false };
+      };
+    };
+  };
+
+  // Agent read-only access to orders - must be authenticated agent
+  public query ({ caller }) func getAgentOrders() : async [CustomerOrder] {
+    switch (agentPrincipals.get(caller)) {
+      case (null) {
+        Runtime.trap("Unauthorized: Only authenticated agents can view orders");
+      };
+      case (?_) {
+        customerOrders.values().toArray();
+      };
+    };
+  };
+
+  // Machine and Kitchen Garden Products - public access
+  public query ({ caller }) func getMachineProducts() : async [ProductView] {
+    let filtered = products.values().toArray().filter(
+      func(product) { product.category == #machine }
+    );
+    filtered.sort().map(toProductView);
+  };
+
+  public query ({ caller }) func getKitchenGardenProducts() : async [ProductView] {
+    let filtered = products.values().toArray().filter(
+      func(product) { product.category == #kitchenGarden }
+    );
+    filtered.sort().map(toProductView);
   };
 };

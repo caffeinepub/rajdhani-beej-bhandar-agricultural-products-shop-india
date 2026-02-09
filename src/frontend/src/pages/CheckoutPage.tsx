@@ -12,6 +12,7 @@ import LoadingState from '../components/system/LoadingState';
 import ErrorState from '../components/system/ErrorState';
 import { validateRequired, validateMobile, validatePincode, validateQuantity } from '../utils/validation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { getCategoryProductType } from '../utils/productType';
 
 export default function CheckoutPage() {
   const { productId } = useParams({ strict: false }) as { productId: string };
@@ -98,6 +99,7 @@ export default function CheckoutPage() {
         customerName: formData.customerName,
         customerMobile: formData.customerMobile,
         customerAddress: fullAddress,
+        productType: getCategoryProductType(product.category),
       });
       navigate({ to: '/products' });
     } catch (error) {
@@ -207,12 +209,36 @@ export default function CheckoutPage() {
                     <p className="text-sm text-destructive mt-1">{errors.pincode}</p>
                   )}
                 </div>
+
+                <div>
+                  <Label htmlFor="quantity">{t('checkout.quantity')} *</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min={Number(product.minimumOrderQuantity)}
+                    value={formData.quantity}
+                    onChange={(e) => handleChange('quantity', e.target.value)}
+                    className={errors.quantity ? 'border-destructive' : ''}
+                  />
+                  {errors.quantity && (
+                    <p className="text-sm text-destructive mt-1">{errors.quantity}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t('product.minOrder')}: {product.minimumOrderQuantity.toString()}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             <Button type="submit" size="lg" className="w-full" disabled={createOrder.isPending}>
-              {createOrder.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('checkout.submit')}
+              {createOrder.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t('checkout.placing')}
+                </>
+              ) : (
+                t('checkout.placeOrder')
+              )}
             </Button>
           </form>
         </div>
@@ -220,36 +246,25 @@ export default function CheckoutPage() {
         <div>
           <Card className="sticky top-20">
             <CardHeader>
-              <CardTitle>{t('checkout.title')}</CardTitle>
+              <CardTitle>{t('checkout.orderSummary')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-muted-foreground">₹{product.price.toString()} per unit</p>
+                <p className="font-medium">{product.name}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
               </div>
-
-              <div>
-                <Label htmlFor="quantity">{t('checkout.quantity')} *</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min={Number(product.minimumOrderQuantity)}
-                  value={formData.quantity}
-                  onChange={(e) => handleChange('quantity', e.target.value)}
-                  className={errors.quantity ? 'border-destructive' : ''}
-                />
-                {errors.quantity && (
-                  <p className="text-sm text-destructive mt-1">{errors.quantity}</p>
-                )}
-                <p className="text-xs text-muted-foreground mt-1">
-                  Min: {product.minimumOrderQuantity.toString()} units
-                </p>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">{t('checkout.total')}</span>
-                  <span className="text-2xl font-bold">₹{totalAmount}</span>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>{t('checkout.price')}</span>
+                  <span>₹{product.price.toString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{t('checkout.quantity')}</span>
+                  <span>{formData.quantity}</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between font-bold">
+                  <span>{t('checkout.total')}</span>
+                  <span>₹{totalAmount}</span>
                 </div>
               </div>
             </CardContent>

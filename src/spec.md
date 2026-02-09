@@ -1,14 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Let admins save a single “Reference Website” URL and optional notes so future UI work can intentionally match a provided reference site.
+**Goal:** Ensure the Contact page Google Map reliably shows the exact Rajdhani Beej Bhandar location and polish the map/location section UI for a more professional look.
 
 **Planned changes:**
-- Add an admin-only “Reference Website” page reachable from the Admin Dashboard/admin navigation.
-- Provide a required URL input, optional multi-line notes field, and Save/Cancel actions.
-- Persist the saved URL/notes in the backend canister, enforcing admin-only writes and rejecting non-admin callers.
-- Display the saved URL/notes after reload with a safe “Open link” action that opens in a new tab.
-- Add a read-only reminder display in the existing admin area (e.g., Admin Dashboard card/section), showing the saved URL with “Open link”, or a placeholder if not set.
-- Include clear loading and error states on the page and avoid crashing on backend failures.
+- Update `frontend/src/constants/contact.ts` to keep `CONTACT_INFO.googleMapsLink` exactly as provided and replace `CONTACT_INFO.googleMapsEmbedUrl` with a valid Google Maps embed URL that points to the same correct location.
+- Adjust the Contact page (`frontend/src/pages/ContactPage.tsx`) so the iframe and the “Open in Google Maps” button consistently reference the same location, with the button opening in a new tab.
+- Add lightweight resilience so if the map embed fails to load, the Contact page remains stable and the “Open in Google Maps” link still works.
+- Improve visual polish of the map/location section UI (spacing, card/frame styling, typography hierarchy, responsive aspect ratio, subtle border/shadow, consistent rounding) without changing core content, adding heavy animations, or introducing non-English hardcoded text.
 
-**User-visible outcome:** Admins can store and review a reference website link (and notes) in the admin area, open it safely in a new tab, and see a reminder of the saved reference link elsewhere in the admin UI.
+**User-visible outcome:** The Contact page displays a correctly pinned Rajdhani Beej Bhandar map embed, the “Open in Google Maps” button opens the same exact location, and the map section looks cleaner and more professional while remaining fast and stable.

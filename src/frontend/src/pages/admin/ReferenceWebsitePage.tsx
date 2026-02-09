@@ -18,13 +18,13 @@ export default function ReferenceWebsitePage() {
   const saveMutation = useSaveReferenceWebsite();
 
   const [url, setUrl] = useState('');
-  const [designNotes, setDesignNotes] = useState('');
+  const [description, setDescription] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (referenceWebsite) {
       setUrl(referenceWebsite.url);
-      setDesignNotes(referenceWebsite.designNotes || '');
+      setDescription(referenceWebsite.description || '');
       setIsEditing(false);
     } else if (!isLoading) {
       setIsEditing(true);
@@ -40,7 +40,7 @@ export default function ReferenceWebsitePage() {
     try {
       await saveMutation.mutateAsync({
         url: url.trim(),
-        designNotes: designNotes.trim() || undefined,
+        description: description.trim(),
       });
       toast.success('Reference website saved successfully');
       setIsEditing(false);
@@ -53,7 +53,7 @@ export default function ReferenceWebsitePage() {
   const handleCancel = () => {
     if (referenceWebsite) {
       setUrl(referenceWebsite.url);
-      setDesignNotes(referenceWebsite.designNotes || '');
+      setDescription(referenceWebsite.description || '');
       setIsEditing(false);
     } else {
       navigate({ to: '/admin' });
@@ -115,11 +115,11 @@ export default function ReferenceWebsitePage() {
                 </div>
               </div>
 
-              {referenceWebsite.designNotes && (
+              {referenceWebsite.description && (
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Design Notes</Label>
                   <div className="mt-2 p-3 bg-muted rounded-md whitespace-pre-wrap">
-                    {referenceWebsite.designNotes}
+                    {referenceWebsite.description}
                   </div>
                 </div>
               )}
@@ -145,12 +145,12 @@ export default function ReferenceWebsitePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="designNotes">Design Notes (Optional)</Label>
+                <Label htmlFor="description">Design Notes (Optional)</Label>
                 <Textarea
-                  id="designNotes"
+                  id="description"
                   placeholder="Add any design notes, color schemes, layout ideas, or other observations..."
-                  value={designNotes}
-                  onChange={(e) => setDesignNotes(e.target.value)}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   rows={6}
                   disabled={saveMutation.isPending}
                 />

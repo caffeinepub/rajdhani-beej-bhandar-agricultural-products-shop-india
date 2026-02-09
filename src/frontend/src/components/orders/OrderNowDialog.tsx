@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart, MessageCircle, Package } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';
+import { CONTACT_INFO } from '../../constants/contact';
 
 interface OrderNowDialogProps {
   product: any;
@@ -29,7 +30,7 @@ export function OrderNowDialog({ product }: OrderNowDialogProps) {
 
   const handleWhatsAppOrder = () => {
     const message = `Hi, I'm interested in ordering:\n\nProduct: ${product.name}\nPrice: ₹${product.price}\n\nPlease provide more details.`;
-    const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${CONTACT_INFO.whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     setOpen(false);
   };

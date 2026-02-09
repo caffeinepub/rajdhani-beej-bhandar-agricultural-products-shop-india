@@ -1,51 +1,34 @@
 import { type ReactNode, useState } from 'react';
-import { useAdminStatus } from '../../hooks/auth/useAdminStatus';
+import { useAdminSession } from '../../hooks/auth/useAdminSession';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import LoadingState from '../system/LoadingState';
 import { AdminLoginModal } from './AdminLoginModal';
+import { useI18n } from '../../i18n/I18nProvider';
 
 export default function AdminRouteGuard({ children }: { children: ReactNode }) {
-  const { isAdmin, isLoading, error } = useAdminStatus();
+  const { isAuthenticated } = useAdminSession();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const { t } = useI18n();
 
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    return (
-      <div className="container py-12">
-        <Alert variant="destructive">
-          <ShieldAlert className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to verify admin status. Please try logging in again.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
+  if (!isAuthenticated) {
     return (
       <>
         <div className="container py-12 max-w-md mx-auto">
           <Alert>
             <ShieldAlert className="h-4 w-4" />
-            <AlertTitle>Access Denied</AlertTitle>
+            <AlertTitle>{t('admin.accessDenied')}</AlertTitle>
             <AlertDescription className="mt-2">
-              You need admin privileges to access this page. Please log in as an admin.
+              {t('admin.accessDeniedDescription')}
             </AlertDescription>
           </Alert>
           <div className="mt-4 flex gap-2 justify-center">
             <Button onClick={() => setLoginModalOpen(true)}>
-              Admin Login
+              {t('admin.adminLoginButton')}
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/">Go Home</Link>
+              <Link to="/">{t('admin.goHome')}</Link>
             </Button>
           </div>
         </div>

@@ -13,10 +13,22 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const AgentInput = IDL.Record({
+  'username' : IDL.Text,
+  'password' : IDL.Text,
+  'agentRole' : IDL.Text,
+  'mobileNumber' : IDL.Text,
+});
+export const ProductType = IDL.Variant({
+  'agriProduct' : IDL.Null,
+  'kitchenGarden' : IDL.Null,
+  'machine' : IDL.Null,
+});
 export const CustomerOrderInput = IDL.Record({
   'customerName' : IDL.Text,
   'customerMobile' : IDL.Text,
   'productId' : IDL.Text,
+  'productType' : ProductType,
   'customerAddress' : IDL.Text,
   'quantity' : IDL.Nat,
 });
@@ -35,6 +47,7 @@ export const CustomerOrder = IDL.Record({
   'customerMobile' : IDL.Text,
   'productId' : IDL.Text,
   'productName' : IDL.Text,
+  'productType' : ProductType,
   'customerAddress' : IDL.Text,
   'totalAmount' : IDL.Nat,
   'quantity' : IDL.Nat,
@@ -42,8 +55,10 @@ export const CustomerOrder = IDL.Record({
 });
 export const Category = IDL.Variant({
   'seed' : IDL.Null,
+  'kitchenGarden' : IDL.Null,
   'pesticide' : IDL.Null,
   'herbicide' : IDL.Null,
+  'machine' : IDL.Null,
   'plantGrowthRegulator' : IDL.Null,
   'fungicide' : IDL.Null,
   'insecticide' : IDL.Null,
@@ -60,6 +75,17 @@ export const ProductInput = IDL.Record({
   }),
   'price' : IDL.Nat,
   'images' : IDL.Vec(IDL.Text),
+});
+export const AboutUsContentTranslationsView = IDL.Record({
+  'title' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  'content' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+});
+export const Agent = IDL.Record({
+  'principal' : IDL.Principal,
+  'username' : IDL.Text,
+  'password' : IDL.Text,
+  'agentRole' : IDL.Text,
+  'mobileNumber' : IDL.Text,
 });
 export const ImmutableMap = IDL.Record({
   'entries' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
@@ -84,34 +110,47 @@ export const LandingPageTranslationsView = IDL.Record({
 });
 export const ReferenceWebsite = IDL.Record({
   'url' : IDL.Text,
-  'designNotes' : IDL.Opt(IDL.Text),
+  'description' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'agentLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'createAgent' : IDL.Func([IDL.Text, AgentInput, IDL.Principal], [], []),
   'createCustomerOrder' : IDL.Func(
       [CustomerOrderInput],
       [IDL.Opt(CustomerOrder)],
       [],
     ),
-  'createProduct' : IDL.Func([ProductInput], [], []),
-  'deleteProduct' : IDL.Func([IDL.Text], [], []),
+  'createProduct' : IDL.Func([IDL.Text, ProductInput], [], []),
+  'deleteAgent' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'deleteProduct' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'getAboutUs' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(AboutUsContentTranslationsView)],
+      ['query'],
+    ),
+  'getAgent' : IDL.Func([IDL.Text, IDL.Text], [IDL.Opt(Agent)], ['query']),
+  'getAgentOrders' : IDL.Func([], [IDL.Vec(CustomerOrder)], ['query']),
+  'getAllAgents' : IDL.Func([IDL.Text], [IDL.Vec(Agent)], ['query']),
   'getAllProducts' : IDL.Func([IDL.Text], [IDL.Vec(ProductView)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCustomerOrder' : IDL.Func(
-      [IDL.Text],
+      [IDL.Text, IDL.Text],
       [IDL.Opt(CustomerOrder)],
       ['query'],
     ),
+  'getKitchenGardenProducts' : IDL.Func([], [IDL.Vec(ProductView)], ['query']),
   'getLandingPageTranslations' : IDL.Func(
       [IDL.Text],
       [LandingPageTranslationsView],
       ['query'],
     ),
+  'getMachineProducts' : IDL.Func([], [IDL.Vec(ProductView)], ['query']),
   'getOrdersByStatus' : IDL.Func(
-      [OrderStatus],
+      [IDL.Text, OrderStatus],
       [IDL.Vec(CustomerOrder)],
       ['query'],
     ),
@@ -125,7 +164,11 @@ export const idlService = IDL.Service({
       [IDL.Vec(ProductView)],
       ['query'],
     ),
-  'getReferenceWebsite' : IDL.Func([], [IDL.Opt(ReferenceWebsite)], ['query']),
+  'getReferenceWebsite' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(ReferenceWebsite)],
+      ['query'],
+    ),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -133,16 +176,22 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'setReferenceWebsite' : IDL.Func([ReferenceWebsite], [], []),
-  'updateLandingPageTranslation' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text],
+  'setReferenceWebsite' : IDL.Func([IDL.Text, ReferenceWebsite], [], []),
+  'updateAboutUsTranslation' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
       [],
     ),
-  'updateOrderStatus' : IDL.Func([IDL.Text, OrderStatus], [], []),
-  'updateProduct' : IDL.Func([IDL.Text, ProductInput], [], []),
-  'updateProductTranslations' : IDL.Func(
+  'updateAgent' : IDL.Func([IDL.Text, IDL.Text, AgentInput], [], []),
+  'updateLandingPageTranslation' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
+  'updateOrderStatus' : IDL.Func([IDL.Text, IDL.Text, OrderStatus], [], []),
+  'updateProduct' : IDL.Func([IDL.Text, IDL.Text, ProductInput], [], []),
+  'updateProductTranslations' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
       [],
     ),
@@ -156,10 +205,22 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const AgentInput = IDL.Record({
+    'username' : IDL.Text,
+    'password' : IDL.Text,
+    'agentRole' : IDL.Text,
+    'mobileNumber' : IDL.Text,
+  });
+  const ProductType = IDL.Variant({
+    'agriProduct' : IDL.Null,
+    'kitchenGarden' : IDL.Null,
+    'machine' : IDL.Null,
+  });
   const CustomerOrderInput = IDL.Record({
     'customerName' : IDL.Text,
     'customerMobile' : IDL.Text,
     'productId' : IDL.Text,
+    'productType' : ProductType,
     'customerAddress' : IDL.Text,
     'quantity' : IDL.Nat,
   });
@@ -178,6 +239,7 @@ export const idlFactory = ({ IDL }) => {
     'customerMobile' : IDL.Text,
     'productId' : IDL.Text,
     'productName' : IDL.Text,
+    'productType' : ProductType,
     'customerAddress' : IDL.Text,
     'totalAmount' : IDL.Nat,
     'quantity' : IDL.Nat,
@@ -185,8 +247,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const Category = IDL.Variant({
     'seed' : IDL.Null,
+    'kitchenGarden' : IDL.Null,
     'pesticide' : IDL.Null,
     'herbicide' : IDL.Null,
+    'machine' : IDL.Null,
     'plantGrowthRegulator' : IDL.Null,
     'fungicide' : IDL.Null,
     'insecticide' : IDL.Null,
@@ -203,6 +267,17 @@ export const idlFactory = ({ IDL }) => {
     }),
     'price' : IDL.Nat,
     'images' : IDL.Vec(IDL.Text),
+  });
+  const AboutUsContentTranslationsView = IDL.Record({
+    'title' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+    'content' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
+  const Agent = IDL.Record({
+    'principal' : IDL.Principal,
+    'username' : IDL.Text,
+    'password' : IDL.Text,
+    'agentRole' : IDL.Text,
+    'mobileNumber' : IDL.Text,
   });
   const ImmutableMap = IDL.Record({
     'entries' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
@@ -227,25 +302,41 @@ export const idlFactory = ({ IDL }) => {
   });
   const ReferenceWebsite = IDL.Record({
     'url' : IDL.Text,
-    'designNotes' : IDL.Opt(IDL.Text),
+    'description' : IDL.Text,
   });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'agentLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'createAgent' : IDL.Func([IDL.Text, AgentInput, IDL.Principal], [], []),
     'createCustomerOrder' : IDL.Func(
         [CustomerOrderInput],
         [IDL.Opt(CustomerOrder)],
         [],
       ),
-    'createProduct' : IDL.Func([ProductInput], [], []),
-    'deleteProduct' : IDL.Func([IDL.Text], [], []),
+    'createProduct' : IDL.Func([IDL.Text, ProductInput], [], []),
+    'deleteAgent' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'deleteProduct' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'getAboutUs' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(AboutUsContentTranslationsView)],
+        ['query'],
+      ),
+    'getAgent' : IDL.Func([IDL.Text, IDL.Text], [IDL.Opt(Agent)], ['query']),
+    'getAgentOrders' : IDL.Func([], [IDL.Vec(CustomerOrder)], ['query']),
+    'getAllAgents' : IDL.Func([IDL.Text], [IDL.Vec(Agent)], ['query']),
     'getAllProducts' : IDL.Func([IDL.Text], [IDL.Vec(ProductView)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCustomerOrder' : IDL.Func(
-        [IDL.Text],
+        [IDL.Text, IDL.Text],
         [IDL.Opt(CustomerOrder)],
+        ['query'],
+      ),
+    'getKitchenGardenProducts' : IDL.Func(
+        [],
+        [IDL.Vec(ProductView)],
         ['query'],
       ),
     'getLandingPageTranslations' : IDL.Func(
@@ -253,8 +344,9 @@ export const idlFactory = ({ IDL }) => {
         [LandingPageTranslationsView],
         ['query'],
       ),
+    'getMachineProducts' : IDL.Func([], [IDL.Vec(ProductView)], ['query']),
     'getOrdersByStatus' : IDL.Func(
-        [OrderStatus],
+        [IDL.Text, OrderStatus],
         [IDL.Vec(CustomerOrder)],
         ['query'],
       ),
@@ -269,7 +361,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getReferenceWebsite' : IDL.Func(
-        [],
+        [IDL.Text],
         [IDL.Opt(ReferenceWebsite)],
         ['query'],
       ),
@@ -280,16 +372,22 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'setReferenceWebsite' : IDL.Func([ReferenceWebsite], [], []),
-    'updateLandingPageTranslation' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text],
+    'setReferenceWebsite' : IDL.Func([IDL.Text, ReferenceWebsite], [], []),
+    'updateAboutUsTranslation' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),
-    'updateOrderStatus' : IDL.Func([IDL.Text, OrderStatus], [], []),
-    'updateProduct' : IDL.Func([IDL.Text, ProductInput], [], []),
-    'updateProductTranslations' : IDL.Func(
+    'updateAgent' : IDL.Func([IDL.Text, IDL.Text, AgentInput], [], []),
+    'updateLandingPageTranslation' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
+    'updateOrderStatus' : IDL.Func([IDL.Text, IDL.Text, OrderStatus], [], []),
+    'updateProduct' : IDL.Func([IDL.Text, IDL.Text, ProductInput], [], []),
+    'updateProductTranslations' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),

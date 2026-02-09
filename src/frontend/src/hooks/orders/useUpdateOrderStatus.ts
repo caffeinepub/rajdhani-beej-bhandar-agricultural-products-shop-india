@@ -1,16 +1,19 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from '../useActor';
+import { useAdminActor } from '../useAdminActor';
+import { useAdminStatus } from '../auth/useAdminStatus';
 import type { OrderStatus } from '../../backend';
 import { toast } from 'sonner';
 
 export function useUpdateOrderStatus() {
-  const { actor } = useActor();
+  const { actor } = useAdminActor();
+  const { token } = useAdminStatus();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ orderId, status }: { orderId: string; status: OrderStatus }) => {
       if (!actor) throw new Error('Actor not available');
-      await actor.updateOrderStatus(orderId, status);
+      if (!token) throw new Error('Admin login required');
+      await actor.updateOrderStatus(token, orderId, status);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

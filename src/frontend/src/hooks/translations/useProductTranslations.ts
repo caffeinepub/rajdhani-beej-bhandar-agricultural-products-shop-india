@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from '../useActor';
+import { useAdminActor } from '../useAdminActor';
+import { useAdminStatus } from '../auth/useAdminStatus';
 
 export function useUpdateProductTranslations() {
-  const { actor } = useActor();
+  const { actor } = useAdminActor();
+  const { token } = useAdminStatus();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -18,7 +20,8 @@ export function useUpdateProductTranslations() {
       description: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.updateProductTranslations(productId, language, name, description);
+      if (!token) throw new Error('Admin login required');
+      return actor.updateProductTranslations(token, productId, language, name, description);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });

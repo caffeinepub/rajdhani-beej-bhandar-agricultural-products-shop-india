@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../useActor';
+import { useAdminActor } from '../useAdminActor';
+import { useAdminStatus } from '../auth/useAdminStatus';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { LandingPageTranslationsView } from '../../backend';
 
@@ -18,13 +20,15 @@ export function useGetLandingPageTranslations() {
 }
 
 export function useUpdateLandingPageTranslation() {
-  const { actor } = useActor();
+  const { actor } = useAdminActor();
+  const { token } = useAdminStatus();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ language, title, subtitle }: { language: string; title: string; subtitle: string }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.updateLandingPageTranslation(language, title, subtitle);
+      if (!token) throw new Error('Admin login required');
+      return actor.updateLandingPageTranslation(token, language, title, subtitle);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['landingPageTranslations'] });

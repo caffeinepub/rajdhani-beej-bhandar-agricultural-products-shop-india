@@ -7,6 +7,8 @@ export const ALLOWED_CATEGORIES: { value: Category; label: string }[] = [
   { value: Category.fungicide, label: 'Fungicides' },
   { value: Category.plantGrowthRegulator, label: 'Plant Growth Regulators (PGR)' },
   { value: Category.seed, label: 'Seeds' },
+  { value: Category.machine, label: 'Agriculture Machines' },
+  { value: Category.kitchenGarden, label: 'Organic Home Kitchen Garden' },
 ];
 
 export function getCategoryLabel(category: Category): string {

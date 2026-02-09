@@ -2,13 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-an-admin-only-feature-to-capture-and-persist-a-single-reference-website-url-the-site-the-user-wants-to-emulate-and-optional-design-notes-so-future-ui-work-can-explicitly-target-that-reference",
-      "featureTitle": "Add an admin-only feature to capture and persist a single “Reference Website” URL (the site the user wants to emulate) and optional design notes, so future UI work can explicitly target that reference.",
+      "featureId": "feature-fix-the-google-maps-embed-so-it-reliably-points-to-the-exact-rajdhani-beej-bhandar-location-using-only-the-provided-location-link-https-maps-app-goo-gl-1nxnfaybe6bfana87-and-ensure-both-the-embedded-map-and-the-open-in-google-maps-button-open-the-same-correct-location-no-wrong-pin",
+      "featureTitle": "Fix the Google Maps embed so it reliably points to the exact Rajdhani Beej Bhandar location using ONLY the provided location link (https://maps.app.goo.gl/1nXnfAyBe6BFAnA87), and ensure both the embedded map and the \"Open in Google Maps\" button open the same correct location (no wrong pin).",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/admin/useReferenceWebsite.ts",
-        "frontend/src/pages/admin/AdminDashboardPage.tsx",
-        "frontend/src/pages/admin/ReferenceWebsitePage.tsx"
+        "frontend/src/constants/contact.ts",
+        "frontend/src/pages/ContactPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,15 +17,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-19"
+        "REQ-44"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-expose-the-saved-reference-website-url-read-only-somewhere-in-the-existing-admin-area-as-a-reminder-for-future-redesign-work-e-g-a-small-card-section-on-the-admin-dashboard-or-on-the-planned-features-page",
-      "featureTitle": "Expose the saved Reference Website URL (read-only) somewhere in the existing admin area as a reminder for future redesign work (e.g., a small card/section on the Admin Dashboard or on the Planned Features page).",
+      "featureId": "feature-make-the-contact-page-map-location-section-look-more-professional-and-stylish-while-staying-lightweight-no-heavy-animations-improving-spacing-card-treatment-and-map-frame-presentation-without-changing-the-core-content",
+      "featureTitle": "Make the Contact page map/location section look more professional and stylish while staying lightweight (no heavy animations), improving spacing, card treatment, and map frame presentation without changing the core content.",
       "files": [
-        "frontend/src/pages/admin/AdminDashboardPage.tsx"
+        "frontend/src/pages/ContactPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -38,7 +36,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-20"
+        "REQ-45"
       ],
       "confidence": "high"
     }

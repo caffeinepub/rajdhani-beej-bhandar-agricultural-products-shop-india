@@ -48,37 +48,38 @@
         --popover-foreground: 0.95 0.01 110;
         --primary: 0.65 0.18 145;
         --primary-foreground: 0.15 0.02 145;
-        --secondary: 0.25 0.02 110;
-        --secondary-foreground: 0.95 0.01 110;
-        --muted: 0.25 0.02 110;
+        --secondary: 0.25 0.03 110;
+        --secondary-foreground: 0.9 0.01 110;
+        --muted: 0.22 0.02 110;
         --muted-foreground: 0.6 0.02 110;
-        --accent: 0.35 0.04 85;
-        --accent-foreground: 0.95 0.01 85;
+        --accent: 0.3 0.04 85;
+        --accent-foreground: 0.9 0.01 85;
         --destructive: 0.5 0.25 25;
         --destructive-foreground: 0.95 0.01 25;
-        --border: 0.3 0.02 110;
-        --input: 0.3 0.02 110;
+        --border: 0.25 0.03 110;
+        --input: 0.25 0.03 110;
         --ring: 0.65 0.18 145;
         --chart-1: 0.65 0.2 145;
         --chart-2: 0.7 0.18 85;
         --chart-3: 0.75 0.16 45;
         --chart-4: 0.6 0.22 25;
         --chart-5: 0.55 0.18 200;
-        --sidebar: 0.18 0.02 110;
+        --sidebar: 0.15 0.02 110;
         --sidebar-foreground: 0.95 0.01 110;
         --sidebar-primary: 0.65 0.18 145;
         --sidebar-primary-foreground: 0.15 0.02 145;
-        --sidebar-accent: 0.25 0.02 110;
-        --sidebar-accent-foreground: 0.95 0.01 110;
-        --sidebar-border: 0.3 0.02 110;
+        --sidebar-accent: 0.25 0.03 110;
+        --sidebar-accent-foreground: 0.9 0.01 110;
+        --sidebar-border: 0.25 0.03 110;
         --sidebar-ring: 0.65 0.18 145;
     }
+}
 
+@layer base {
     * {
         @apply border-border;
     }
     body {
         @apply bg-background text-foreground;
-        font-feature-settings: "rlig" 1, "calt" 1;
     }
 }

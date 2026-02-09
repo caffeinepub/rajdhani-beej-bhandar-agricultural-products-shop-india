@@ -1,19 +1,29 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Shift focus to targeted website modifications/bug fixes (no external redirects, no breaking existing design): internal admin login + improved admin dashboard UI, site-wide multilingual switching with per-language admin-editable content, home hero title set to “RAJDHANI BEEJ BHANDAR”, ensure product image slider/full descriptions remain stable, and remove the “Built with love using caffeine.ai” footer branding.",
+  "projectStateVersion": 19,
+  "summary": "Scope expanded beyond fix-only: in addition to internal credential-based admin auth, multilingual fixes, contact/map corrections, and lightweight home/admin UI improvements, the site should add an Agent role with separate login and admin-managed agent accounts, expand the catalog/order system to include Agriculture Machines (and parts) and Organic Home Kitchen Garden products, and update admin order views to clearly show product type across normal/bulk/machine/kitchen-garden orders; also remove the caffeine.ai footer branding and consider adding a lightweight leaf animation on widgets.",
   "architectural_notes": [
     "Deliver in phases: implement a simpler MVP first, then expand to full professional feature set.",
     "No external redirects for admin/auth flows; admin login must render within same website UI (popup or internal route).",
     "Keep changes lightweight: no heavy plugins; mobile-friendly; avoid lag/crashes; do not break existing design.",
-    "Keep existing product & order flows unchanged; only stabilize issues (image slider, full description)."
+    "Keep existing product & order flows unchanged; only stabilize issues (image slider, full description).",
+    "Fix-only scope: no full site redesign; keep site fast/lightweight; avoid heavy animations and unnecessary sliders.",
+    "All newly added content sections must be wired into the existing multilingual system so language switching updates them (no fixed English-only text).",
+    "Canonical business info must be consistent everywhere: Rajdhani Beej Bhandar, 8077036783, Ganj Daranagar, Bijnor, Uttar Pradesh, India; and correct Google Map link.",
+    "Home page visual enhancements can be more colourful/stylish but must remain lightweight (no heavy animations/lag) and must not break existing flows.",
+    "Remove/disable Internet Identity auth; use an internal credential-based admin login flow with proper error messaging and a session that persists until explicit logout.",
+    "Introduce role-based access control (RBAC): Admin vs Agent; Agent is read-only for orders/status visibility and cannot access product/content/admin settings."
   ],
   "known_issues": [
     "Admin login currently redirects externally / not contained within website UI.",
     "Language switching is stuck in English; site-wide language switch not applying to all content.",
-    "Footer contains unwanted branding text (“Built with love using caffeine.ai”) that must be removed."
+    "Footer contains unwanted branding text (“Built with love using caffeine.ai”) that must be removed.",
+    "Site displays incorrect contact number/address in one or more locations (must be updated everywhere).",
+    "Google Map embed points to the wrong location / wrong pin (must use provided link).",
+    "Internet Identity login is present; must be removed/disabled in favor of internal credential-based admin login.",
+    "Bulk order flow is requested to be fixed/implemented so it appears correctly in admin alongside other order types (normal/machine/kitchen garden)."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-implement-a-phase-1-mvp-scope-simpler-version-that-delivers-a-stable-non-crashing-agricultural-products-shop-app-and-explicitly-separate-phase-2-fully-professional-features-into-a-visible-backlog-list-in-the-ui-e-g-an-admin-only-planned-features-page-or-a-docs-page-so-the-app-can-be-expanded-later-without-rewriting-core-flows",
@@ -174,6 +184,174 @@
         "REQ-20"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-fix-admin-login-so-the-admin-login-entry-point-never-redirects-to-caffeine-ai-or-any-other-external-app-platform-the-admin-login-must-open-inside-the-same-website-either-an-in-app-modal-or-an-internal-route-under-the-same-domain-after-successful-login-admin-dashboard-navigation-must-become-visible-before-login-admin-controls-must-remain-hidden-for-normal-users",
+      "title": "Fix Admin Login so the admin login entry point never redirects to Caffeine AI or any other external app/platform. The Admin Login must open inside the same website (either an in-app modal or an internal route under the same domain). After successful login, admin dashboard/navigation must become visible; before login, admin controls must remain hidden for normal users.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-shop-contact-identity-across-the-entire-ui-to-the-correct-details-and-ensure-there-are-no-remaining-incorrect-old-values-anywhere-they-are-displayed-header-footer-contact-page-and-any-popup-form-that-shows-contact-info-use-exactly-shop-name-rajdhani-beej-bhandar-contact-number-8077036783-address-ganj-daranagar-bijnor-uttar-pradesh-india",
+      "title": "Update shop contact identity across the entire UI to the correct details and ensure there are no remaining incorrect/old values anywhere they are displayed (header, footer, Contact page, and any popup/form that shows contact info). Use exactly: Shop Name: \"Rajdhani Beej Bhandar\"; Contact Number: \"8077036783\"; Address: \"Ganj Daranagar, Bijnor, Uttar Pradesh, India\".",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-google-map-location-so-it-points-to-rajdhani-beej-bhandar-using-only-this-provided-location-link-https-maps-app-goo-gl-1nxnfaybe6bfana87-update-both-the-embedded-map-and-the-open-in-google-maps-link-so-they-consistently-open-the-correct-location-no-wrong-pin",
+      "title": "Fix the Google Map location so it points to \"Rajdhani Beej Bhandar\" using ONLY this provided location link: https://maps.app.goo.gl/1nXnfAyBe6BFAnA87. Update both the embedded map and the \"Open in Google Maps\" link so they consistently open the correct location (no wrong pin).",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-strengthen-the-home-page-top-hero-area-and-add-three-simple-professional-feature-boxes-below-it-no-heavy-animation-feature-box-text-must-be-exactly-1-genuine-agricultural-products-2-expert-guidance-for-farmers-3-easy-ordering-bulk-supply-use-small-clean-icons-lightweight-no-sliders-carousels",
+      "title": "Strengthen the Home page top/hero area and add three simple professional feature boxes below it (no heavy animation). Feature box text must be exactly: (1) \"Genuine Agricultural Products\" (2) \"Expert Guidance for Farmers\" (3) \"Easy Ordering & Bulk Supply\". Use small, clean icons (lightweight; no sliders/carousels).",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-about-us-section-with-the-provided-content-to-the-public-site-and-make-it-admin-editable-later-the-about-us-content-must-support-multi-language-switching-same-instant-in-app-language-switching-behavior-as-existing-hero-product-translations",
+      "title": "Add an \"About Us\" section with the provided content to the public site, and make it admin-editable later. The About Us content must support multi-language switching (same instant in-app language switching behavior as existing hero/product translations).",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-existing-translation-i18n-system-so-all-newly-added-ui-text-home-feature-boxes-labels-about-us-heading-content-contact-labels-if-shown-and-any-new-footer-header-contact-copy-is-language-aware-and-updates-immediately-when-the-user-switches-language-do-not-leave-any-newly-added-user-facing-strings-permanently-fixed-to-english",
+      "title": "Extend the existing translation/i18n system so all newly added UI text (Home feature boxes labels, About Us heading/content, contact labels if shown, and any new footer/header contact copy) is language-aware and updates immediately when the user switches language. Do not leave any newly added user-facing strings permanently fixed to English.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dedicated-whatsapp-enquiry-option-separate-from-ordering-that-lets-users-quickly-message-the-shop-on-whatsapp-with-a-prefilled-enquiry-message-using-the-existing-whatsapp-number-in-contact-info-whatsappnumber",
+      "title": "Add a dedicated WhatsApp Enquiry option (separate from ordering) that lets users quickly message the shop on WhatsApp with a prefilled enquiry message, using the existing WhatsApp number in CONTACT_INFO.whatsappNumber.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-home-page-more-colourful-and-stylish-while-keeping-it-lightweight-and-consistent-with-the-existing-design-flows-no-heavy-animations-by-enhancing-the-home-page-section-styling-backgrounds-and-card-treatments",
+      "title": "Make the Home page more colourful and stylish while keeping it lightweight and consistent with the existing design/flows (no heavy animations), by enhancing the Home page section styling, backgrounds, and card treatments.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-frontend-admin-auth-state-separate-from-internet-identity-that-supports-login-with-username-password-showing-an-english-error-message-for-wrong-credentials-persisting-the-admin-session-token-locally-restoring-the-session-on-page-refresh-and-logging-out-clearing-the-session-token-so-the-admin-session-remains-active-until-logout",
+      "title": "Add a new frontend admin auth state (separate from Internet Identity) that supports: login with username/password, showing an English error message for wrong credentials, persisting the admin session token locally, restoring the session on page refresh, and logging out (clearing the session token) so the admin session remains active until logout.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-internet-identity-based-admin-ui-components-and-route-protection-to-use-the-new-credential-based-admin-session-update-adminloginmodal-adminauthcontrols-adminrouteguard-and-applayout-admin-visibility-so-they-rely-on-token-based-admin-status-instead-of-internet-identity-identity-state",
+      "title": "Replace the existing Internet Identity-based admin UI components and route protection to use the new credential-based admin session. Update AdminLoginModal, AdminAuthControls, AdminRouteGuard, and AppLayout admin visibility so they rely on token-based admin status instead of Internet Identity identity state.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-frontend-admin-related-react-query-hooks-and-mutations-that-currently-call-admin-protected-backend-methods-so-they-pass-the-admin-session-token-and-continue-to-work-with-the-new-backend-authorization-this-includes-product-mutations-order-status-updates-translation-updates-and-reference-website-saving-loading",
+      "title": "Update all frontend admin-related React Query hooks and mutations that currently call admin-protected backend methods so they pass the admin session token and continue to work with the new backend authorization. This includes product mutations, order status updates, translation updates, and reference website saving/loading.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-application-no-longer-depends-on-internet-identity-for-any-admin-authentication-behavior-without-editing-immutable-frontend-files-internetidentityprovider-may-remain-mounted-due-to-immutable-frontend-entry-file-but-it-must-not-be-required-for-admin-login-admin-session-persistence-actor-creation-for-admin-calls-or-route-protection",
+      "title": "Ensure the application no longer depends on Internet Identity for any admin authentication behavior, without editing immutable frontend files. InternetIdentityProvider may remain mounted (due to immutable frontend entry file), but it must not be required for admin login, admin session persistence, actor creation for admin calls, or route protection.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-agent-authentication-system-with-a-separate-in-app-agent-login-entry-point-that-does-not-redirect-outside-the-website",
+      "title": "Add an Agent authentication system with a separate in-app “Agent Login” entry point that does not redirect outside the website.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-admin-ui-section-to-manage-agents-create-edit-delete-with-fields-username-mobile-number-password-and-agent-role",
+      "title": "Add an Admin UI section to manage agents (create/edit/delete) with fields: username, mobile number, password, and agent role.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-agent-only-orders-page-that-displays-all-orders-and-their-statuses-and-ensure-agents-cannot-access-any-admin-product-content-management-routes",
+      "title": "Add an Agent-only Orders page that displays all orders and their statuses, and ensure agents cannot access any admin product/content management routes.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-data-model-so-each-order-clearly-includes-a-product-type-value-with-exact-labels-agri-product-machine-kitchen-garden-and-show-this-in-admin-order-details",
+      "title": "Extend the data model so each order clearly includes a “Product type” value, with exact labels: “Agri product”, “Machine”, “Kitchen Garden”, and show this in Admin order details.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-public-facing-catalog-entry-points-for-agriculture-machines-and-for-organic-home-kitchen-garden-products-and-ensure-orders-created-from-these-sections-are-tagged-with-the-correct-product-type",
+      "title": "Add public-facing catalog entry points for “Agriculture Machines” and for “Organic Home Kitchen Garden products”, and ensure orders created from these sections are tagged with the correct product type.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-admin-dashboard-order-management-view-so-all-orders-normal-bulk-machine-kitchen-garden-are-clearly-visible-and-distinguishable-including-product-type-on-each-row",
+      "title": "Update the Admin Dashboard/Order Management view so “All orders (normal, bulk, machine, kitchen garden)” are clearly visible and distinguishable, including product type on each row.",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-footer-branding-text-and-link-that-says-2026-built-with-using-caffeine-ai-from-the-website-footer-and-ensure-no-footer-text-or-link-anywhere-in-the-ui-mentions-caffeine-ai",
+      "title": "Remove the footer branding text and link that says \"© 2026. Built with ❤️ using caffeine.ai\" from the website footer, and ensure no footer text or link anywhere in the UI mentions \"caffeine.ai\".",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-google-maps-embed-so-it-reliably-points-to-the-exact-rajdhani-beej-bhandar-location-using-only-the-provided-location-link-https-maps-app-goo-gl-1nxnfaybe6bfana87-and-ensure-both-the-embedded-map-and-the-open-in-google-maps-button-open-the-same-correct-location-no-wrong-pin",
+      "title": "Fix the Google Maps embed so it reliably points to the exact Rajdhani Beej Bhandar location using ONLY the provided location link (https://maps.app.goo.gl/1nXnfAyBe6BFAnA87), and ensure both the embedded map and the \"Open in Google Maps\" button open the same correct location (no wrong pin).",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-contact-page-map-location-section-look-more-professional-and-stylish-while-staying-lightweight-no-heavy-animations-improving-spacing-card-treatment-and-map-frame-presentation-without-changing-the-core-content",
+      "title": "Make the Contact page map/location section look more professional and stylish while staying lightweight (no heavy animations), improving spacing, card treatment, and map frame presentation without changing the core content.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -282,6 +460,122 @@
     {
       "id": "AR-18",
       "summary": "Create a new site design/UX similar to a user-provided reference website link (match look & layout while keeping existing functionality and constraints)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Fix and standardize contact details site-wide (header/footer/contact page/forms/popups): shop name Rajdhani Beej Bhandar, phone 8077036783, address Ganj Daranagar, Bijnor, Uttar Pradesh, India",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Fix Google Map embed to point to the correct location using the provided maps.app.goo.gl link; ensure correct pin and safe embed",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Home page improvements: hero subtitle “Trusted Agricultural Products Store” + add 3 simple professional feature boxes with small icons (no heavy animation)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add an About Us section with provided content; make it editable later by admin",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Lightweight UI fill: add section spacing, clean icons, and soft background blocks to make pages look less empty (no heavy animations, no excessive sliders)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add a WhatsApp Enquiry option (separate from ordering) for users to quickly message the shop with questions via a prefilled WhatsApp message/button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Make the Home page more colourful and stylish while keeping it lightweight and consistent with the existing design/flows",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Remove Internet Identity login and implement internal credential-based Admin Login menu (wrong-credentials error, session persists until logout, include Logout button); keep fast/secure/clean",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement a credential-based admin authentication system in the backend (Motoko) that does not depend on Internet Identity, using the provided admin credentials (Username: ABYSSSHAVEZ, Password: S2182007n4299781@). The backend must (a) validate credentials securely, (b) create a server-issued admin session token on successful login, (c) provide a way to validate the session token, and (d) provide a logout action that invalidates the session token.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Refactor backend admin-only operations to authorize using the new admin session token (not the caller principal / Internet Identity). All existing admin-only operations (products CRUD, order management, translation updates, and reference website CRUD) must require a valid admin session token and must trap/return an authorization error if the token is missing or invalid.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add separate Agent Login and role-based access: agent can view all orders and their statuses (Pending/Confirmed/Completed) but cannot edit products or site content",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Admin can create/edit/delete Agents with fields: username, mobile number, password, and agent role",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Add new product options/categories for purchasing: Agriculture Machines (and parts) and Organic Home Kitchen Garden products, with visible entry buttons on Home",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Admin Dashboard: all orders (normal, bulk, machine, kitchen garden) must be clearly visible; order details must display product type (Agri product / Machine / Kitchen Garden)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Add lightweight leaf animation on widgets (must remain performance-friendly and not break existing design/flows)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Implement backend persistence and admin-only CRUD for Agents, including fields: username, mobile number, password, and agent role.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Implement backend Agent login that issues an agent session token and enables agent-authorized read-only access to all orders.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Make the Google Map/Location section look more professional and stylish (UI polish around the map embed while keeping it lightweight)",
       "reqIds": [],
       "status": "pending"
     }

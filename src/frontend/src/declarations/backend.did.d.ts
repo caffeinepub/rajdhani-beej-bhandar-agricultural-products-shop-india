@@ -10,9 +10,28 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AboutUsContentTranslationsView {
+  'title' : Array<[string, string]>,
+  'content' : Array<[string, string]>,
+}
+export interface Agent {
+  'principal' : Principal,
+  'username' : string,
+  'password' : string,
+  'agentRole' : string,
+  'mobileNumber' : string,
+}
+export interface AgentInput {
+  'username' : string,
+  'password' : string,
+  'agentRole' : string,
+  'mobileNumber' : string,
+}
 export type Category = { 'seed' : null } |
+  { 'kitchenGarden' : null } |
   { 'pesticide' : null } |
   { 'herbicide' : null } |
+  { 'machine' : null } |
   { 'plantGrowthRegulator' : null } |
   { 'fungicide' : null } |
   { 'insecticide' : null };
@@ -24,6 +43,7 @@ export interface CustomerOrder {
   'customerMobile' : string,
   'productId' : string,
   'productName' : string,
+  'productType' : ProductType,
   'customerAddress' : string,
   'totalAmount' : bigint,
   'quantity' : bigint,
@@ -33,6 +53,7 @@ export interface CustomerOrderInput {
   'customerName' : string,
   'customerMobile' : string,
   'productId' : string,
+  'productType' : ProductType,
   'customerAddress' : string,
   'quantity' : bigint,
 }
@@ -58,6 +79,9 @@ export interface ProductInput {
   'price' : bigint,
   'images' : Array<string>,
 }
+export type ProductType = { 'agriProduct' : null } |
+  { 'kitchenGarden' : null } |
+  { 'machine' : null };
 export interface ProductView {
   'id' : string,
   'createdAt' : Time,
@@ -68,10 +92,7 @@ export interface ProductView {
   'price' : bigint,
   'images' : Array<string>,
 }
-export interface ReferenceWebsite {
-  'url' : string,
-  'designNotes' : [] | [string],
-}
+export interface ReferenceWebsite { 'url' : string, 'description' : string }
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
@@ -79,37 +100,54 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'agentLogin' : ActorMethod<[string, string], boolean>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'createAgent' : ActorMethod<[string, AgentInput, Principal], undefined>,
   'createCustomerOrder' : ActorMethod<
     [CustomerOrderInput],
     [] | [CustomerOrder]
   >,
-  'createProduct' : ActorMethod<[ProductInput], undefined>,
-  'deleteProduct' : ActorMethod<[string], undefined>,
+  'createProduct' : ActorMethod<[string, ProductInput], undefined>,
+  'deleteAgent' : ActorMethod<[string, string], undefined>,
+  'deleteProduct' : ActorMethod<[string, string], undefined>,
+  'getAboutUs' : ActorMethod<[string], [] | [AboutUsContentTranslationsView]>,
+  'getAgent' : ActorMethod<[string, string], [] | [Agent]>,
+  'getAgentOrders' : ActorMethod<[], Array<CustomerOrder>>,
+  'getAllAgents' : ActorMethod<[string], Array<Agent>>,
   'getAllProducts' : ActorMethod<[string], Array<ProductView>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getCustomerOrder' : ActorMethod<[string], [] | [CustomerOrder]>,
+  'getCustomerOrder' : ActorMethod<[string, string], [] | [CustomerOrder]>,
+  'getKitchenGardenProducts' : ActorMethod<[], Array<ProductView>>,
   'getLandingPageTranslations' : ActorMethod<
     [string],
     LandingPageTranslationsView
   >,
-  'getOrdersByStatus' : ActorMethod<[OrderStatus], Array<CustomerOrder>>,
+  'getMachineProducts' : ActorMethod<[], Array<ProductView>>,
+  'getOrdersByStatus' : ActorMethod<
+    [string, OrderStatus],
+    Array<CustomerOrder>
+  >,
   'getProductTranslations' : ActorMethod<[string, string], [] | [ProductView]>,
   'getProductsByCategory' : ActorMethod<[Category, string], Array<ProductView>>,
-  'getReferenceWebsite' : ActorMethod<[], [] | [ReferenceWebsite]>,
+  'getReferenceWebsite' : ActorMethod<[string], [] | [ReferenceWebsite]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'setReferenceWebsite' : ActorMethod<[ReferenceWebsite], undefined>,
-  'updateLandingPageTranslation' : ActorMethod<
-    [string, string, string],
+  'setReferenceWebsite' : ActorMethod<[string, ReferenceWebsite], undefined>,
+  'updateAboutUsTranslation' : ActorMethod<
+    [string, string, string, string],
     undefined
   >,
-  'updateOrderStatus' : ActorMethod<[string, OrderStatus], undefined>,
-  'updateProduct' : ActorMethod<[string, ProductInput], undefined>,
-  'updateProductTranslations' : ActorMethod<
+  'updateAgent' : ActorMethod<[string, string, AgentInput], undefined>,
+  'updateLandingPageTranslation' : ActorMethod<
     [string, string, string, string],
+    undefined
+  >,
+  'updateOrderStatus' : ActorMethod<[string, string, OrderStatus], undefined>,
+  'updateProduct' : ActorMethod<[string, string, ProductInput], undefined>,
+  'updateProductTranslations' : ActorMethod<
+    [string, string, string, string, string],
     undefined
   >,
 }

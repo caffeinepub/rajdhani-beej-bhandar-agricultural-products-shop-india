@@ -1,54 +1,44 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Admin Reference Website URL capture and reminder display",
+  "title": "Fix Contact page Google Maps location and polish map section UI",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Add an admin-only page to view/edit and persist a single Reference Website URL plus optional design notes, with robust loading/error states and safe external link handling.",
+      "id": "REQ-44",
+      "summary": "Ensure the Google Maps embed and outbound link always open the exact Rajdhani Beej Bhandar location using the provided canonical Maps link, with a safe fallback if the embed fails.",
       "acceptanceCriteria": [
-        "A new admin-only page is available from the Admin Dashboard (and/or existing admin navigation) labeled in English as “Reference Website”.",
-        "The page contains: (1) a required URL field, (2) an optional multi-line notes field, and (3) Save/Cancel actions.",
-        "Saving persists the URL/notes in the backend canister and is only allowed for admins; non-admin callers are rejected.",
-        "The saved URL is displayed on the page after reload and includes a safe “Open link” action that opens in a new tab.",
-        "The page shows clear loading and error states and does not crash on backend failures."
+        "In frontend/src/constants/contact.ts, CONTACT_INFO.googleMapsLink remains exactly \"https://maps.app.goo.gl/1nXnfAyBe6BFAnA87\".",
+        "CONTACT_INFO.googleMapsEmbedUrl is updated to a valid Google Maps embed URL that shows the correct Rajdhani Beej Bhandar location (not a placeholder/incorrect coordinates).",
+        "On the Contact page, the iframe renders the correct location and the \"Open in Google Maps\" button opens the same correct location in a new tab.",
+        "If the embed fails to load (blocked/invalid), the Contact page remains stable and usable (no crash), and the user still has a working \"Open in Google Maps\" link."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/admin/useReferenceWebsite.ts",
-          "operation": "create",
-          "description": "Create React Query hook(s) to fetch the saved Reference Website (using getReferenceWebsite) and to save updates (using setReferenceWebsite), leveraging the existing actor from useActor; ensure errors are surfaced to the caller for UI display. Use existing auth/admin flow (authorization component already in the app). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/admin/ReferenceWebsitePage.tsx",
-          "operation": "create",
-          "description": "Implement the admin-only “Reference Website” page UI: required URL input, optional multi-line notes textarea, Save/Cancel actions, and a read-only section showing the currently saved URL/notes with a safe “Open link” action (new tab, noopener/noreferrer). Include loading and error states (e.g., using existing LoadingState/ErrorState patterns) and handle backend failures without crashing. Use existing shadcn-ui components for form/layout where appropriate. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/constants/contact.ts",
           "operation": "modify",
-          "description": "Wire the new admin page into routing (e.g., add an /admin/reference-website route) and wrap it with the existing AdminRouteGuard so only admins can access it. Verify the component's usage instructions before implementing."
+          "description": "Update CONTACT_INFO.googleMapsEmbedUrl to a valid Google Maps embed URL that resolves to the same Rajdhani Beej Bhandar location as CONTACT_INFO.googleMapsLink, while keeping CONTACT_INFO.googleMapsLink exactly unchanged per constraints."
         },
         {
-          "path": "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "path": "frontend/src/pages/ContactPage.tsx",
           "operation": "modify",
-          "description": "Add a new Admin Dashboard navigation card labeled “Reference Website” that links to the new admin page. Keep all new text in English. Verify the component's usage instructions before implementing."
+          "description": "Harden the map embed rendering: add lightweight iframe error handling (no crashes on blocked/invalid embed) and ensure the outbound button uses CONTACT_INFO.googleMapsLink and an existing i18n key for its label so both map and button consistently target the same location."
         }
       ]
     },
     {
-      "id": "REQ-20",
-      "summary": "Show the saved Reference Website URL read-only in the existing admin area (admin-only) with an Open link action and a not-set placeholder.",
+      "id": "REQ-45",
+      "summary": "Polish the Contact page map/location section styling with refined spacing, card treatment, and a cleaner responsive map frame while keeping content unchanged and lightweight.",
       "acceptanceCriteria": [
-        "When an admin has saved a Reference Website URL, the admin area shows the URL in a read-only display and provides an “Open link” action.",
-        "If no Reference Website URL has been saved yet, the admin area shows a short English placeholder message indicating that the reference link has not been set.",
-        "This display is not visible to non-admin users."
+        "The map section on frontend/src/pages/ContactPage.tsx has improved visual polish (e.g., refined Card styling, better padding/typography hierarchy, tasteful border/shadow, consistent rounding) while remaining fast to render.",
+        "The map iframe is presented in a cleaner frame (consistent rounded corners, subtle border/shadow) and maintains a responsive aspect ratio.",
+        "User-facing text remains in English (existing i18n keys continue to be used; no new hardcoded non-English strings are introduced).",
+        "No new heavy animation libraries/components are added; any motion is limited to subtle hover/focus states consistent with the existing Tailwind/shadcn styling."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "path": "frontend/src/pages/ContactPage.tsx",
           "operation": "modify",
-          "description": "Add a small read-only reminder section/card on the Admin Dashboard that uses the Reference Website fetch hook to display either: (a) the saved URL with a safe “Open link” action (new tab, noopener/noreferrer), or (b) an English placeholder indicating the reference link has not been set. Ensure loading and error states are shown clearly. Since this is within an admin-guarded page, it remains hidden from non-admin users. Verify the component's usage instructions before implementing."
+          "description": "Improve the map/location section UI using existing shadcn-ui primitives (Card/Button) and Tailwind utility classes only: enhance spacing and hierarchy, apply subtle border/shadow and consistent rounding, and present the iframe within a cleaner responsive frame with only minimal hover/focus states. Verify the component's usage instructions before implementing."
         }
       ]
     }
