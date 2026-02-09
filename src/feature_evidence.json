@@ -1,0 +1,46 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-an-admin-only-feature-to-capture-and-persist-a-single-reference-website-url-the-site-the-user-wants-to-emulate-and-optional-design-notes-so-future-ui-work-can-explicitly-target-that-reference",
+      "featureTitle": "Add an admin-only feature to capture and persist a single “Reference Website” URL (the site the user wants to emulate) and optional design notes, so future UI work can explicitly target that reference.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/admin/useReferenceWebsite.ts",
+        "frontend/src/pages/admin/AdminDashboardPage.tsx",
+        "frontend/src/pages/admin/ReferenceWebsitePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-19"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-expose-the-saved-reference-website-url-read-only-somewhere-in-the-existing-admin-area-as-a-reminder-for-future-redesign-work-e-g-a-small-card-section-on-the-admin-dashboard-or-on-the-planned-features-page",
+      "featureTitle": "Expose the saved Reference Website URL (read-only) somewhere in the existing admin area as a reminder for future redesign work (e.g., a small card/section on the Admin Dashboard or on the Planned Features page).",
+      "files": [
+        "frontend/src/pages/admin/AdminDashboardPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-20"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Admin Reference Website URL capture and reminder display",
+  "requirements": [
+    {
+      "id": "REQ-19",
+      "summary": "Add an admin-only page to view/edit and persist a single Reference Website URL plus optional design notes, with robust loading/error states and safe external link handling.",
+      "acceptanceCriteria": [
+        "A new admin-only page is available from the Admin Dashboard (and/or existing admin navigation) labeled in English as “Reference Website”.",
+        "The page contains: (1) a required URL field, (2) an optional multi-line notes field, and (3) Save/Cancel actions.",
+        "Saving persists the URL/notes in the backend canister and is only allowed for admins; non-admin callers are rejected.",
+        "The saved URL is displayed on the page after reload and includes a safe “Open link” action that opens in a new tab.",
+        "The page shows clear loading and error states and does not crash on backend failures."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/admin/useReferenceWebsite.ts",
+          "operation": "create",
+          "description": "Create React Query hook(s) to fetch the saved Reference Website (using getReferenceWebsite) and to save updates (using setReferenceWebsite), leveraging the existing actor from useActor; ensure errors are surfaced to the caller for UI display. Use existing auth/admin flow (authorization component already in the app). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/admin/ReferenceWebsitePage.tsx",
+          "operation": "create",
+          "description": "Implement the admin-only “Reference Website” page UI: required URL input, optional multi-line notes textarea, Save/Cancel actions, and a read-only section showing the currently saved URL/notes with a safe “Open link” action (new tab, noopener/noreferrer). Include loading and error states (e.g., using existing LoadingState/ErrorState patterns) and handle backend failures without crashing. Use existing shadcn-ui components for form/layout where appropriate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the new admin page into routing (e.g., add an /admin/reference-website route) and wrap it with the existing AdminRouteGuard so only admins can access it. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "operation": "modify",
+          "description": "Add a new Admin Dashboard navigation card labeled “Reference Website” that links to the new admin page. Keep all new text in English. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "summary": "Show the saved Reference Website URL read-only in the existing admin area (admin-only) with an Open link action and a not-set placeholder.",
+      "acceptanceCriteria": [
+        "When an admin has saved a Reference Website URL, the admin area shows the URL in a read-only display and provides an “Open link” action.",
+        "If no Reference Website URL has been saved yet, the admin area shows a short English placeholder message indicating that the reference link has not been set.",
+        "This display is not visible to non-admin users."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "operation": "modify",
+          "description": "Add a small read-only reminder section/card on the Admin Dashboard that uses the Reference Website fetch hook to display either: (a) the saved URL with a safe “Open link” action (new tab, noopener/noreferrer), or (b) an English placeholder indicating the reference link has not been set. Ensure loading and error states are shown clearly. Since this is within an admin-guarded page, it remains hidden from non-admin users. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 7,
+  "summary": "Shift focus to targeted website modifications/bug fixes (no external redirects, no breaking existing design): internal admin login + improved admin dashboard UI, site-wide multilingual switching with per-language admin-editable content, home hero title set to “RAJDHANI BEEJ BHANDAR”, ensure product image slider/full descriptions remain stable, and remove the “Built with love using caffeine.ai” footer branding.",
+  "architectural_notes": [
+    "Deliver in phases: implement a simpler MVP first, then expand to full professional feature set.",
+    "No external redirects for admin/auth flows; admin login must render within same website UI (popup or internal route).",
+    "Keep changes lightweight: no heavy plugins; mobile-friendly; avoid lag/crashes; do not break existing design.",
+    "Keep existing product & order flows unchanged; only stabilize issues (image slider, full description)."
+  ],
+  "known_issues": [
+    "Admin login currently redirects externally / not contained within website UI.",
+    "Language switching is stuck in English; site-wide language switch not applying to all content.",
+    "Footer contains unwanted branding text (“Built with love using caffeine.ai”) that must be removed."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-implement-a-phase-1-mvp-scope-simpler-version-that-delivers-a-stable-non-crashing-agricultural-products-shop-app-and-explicitly-separate-phase-2-fully-professional-features-into-a-visible-backlog-list-in-the-ui-e-g-an-admin-only-planned-features-page-or-a-docs-page-so-the-app-can-be-expanded-later-without-rewriting-core-flows",
+      "title": "Implement a Phase 1 MVP scope (simpler version) that delivers a stable, non-crashing Agricultural Products Shop app, and explicitly separate Phase 2 “fully professional” features into a visible backlog list in the UI (e.g., an admin-only “Planned Features” page or a docs page) so the app can be expanded later without rewriting core flows.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-coherent-lightweight-visual-theme-for-an-indian-agricultural-shop-colors-typography-spacing-component-styling-and-apply-it-consistently-across-public-pages-and-the-admin-dashboard-avoiding-blue-purple-as-the-primary-palette",
+      "title": "Create a coherent, lightweight visual theme for an Indian agricultural shop (colors, typography, spacing, component styling) and apply it consistently across public pages and the admin dashboard, avoiding blue/purple as the primary palette.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-language-selection-modal-shown-on-first-visit-that-lets-the-user-choose-hindi-english-tamil-telugu-kannada-malayalam-gujarati-marathi-punjabi-bengali-default-language-is-english-language-switching-must-be-immediate-in-app-no-full-page-reload-for-phase-1-mvp-allow-non-english-languages-to-fall-back-to-english-strings-where-translations-are-not-yet-provided",
+      "title": "Add a language selection modal shown on first visit that lets the user choose: Hindi, English, Tamil, Telugu, Kannada, Malayalam, Gujarati, Marathi, Punjabi, Bengali; default language is English. Language switching must be immediate in-app (no full page reload). For Phase 1 MVP, allow non-English languages to fall back to English strings where translations are not yet provided.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-product-catalog-limited-to-exactly-these-categories-pesticides-herbicides-insecticides-fungicides-plant-growth-regulators-pgr-seeds-prevent-creation-or-display-of-any-other-categories",
+      "title": "Implement a product catalog limited to exactly these categories: Pesticides, Herbicides, Insecticides, Fungicides, Plant Growth Regulators (PGR), Seeds. Prevent creation or display of any other categories.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-phase-1-product-browsing-experience-home-page-with-category-entry-points-a-product-list-page-with-basic-filtering-by-category-and-a-product-detail-page-that-shows-name-category-price-stock-minimum-order-quantity-optional-bulk-order-price-multiple-images-and-full-description-no-cut-off-if-the-description-is-extremely-long-optionally-use-a-read-more-expansion-without-truncating-important-content-by-default",
+      "title": "Build a Phase 1 product browsing experience: Home page with category entry points, a product list page with basic filtering by category, and a product detail page that shows: name, category, price, stock, minimum order quantity, optional bulk order price, multiple images, and full description (no cut-off). If the description is extremely long, optionally use a “Read more” expansion without truncating important content by default.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-product-image-handling-on-the-product-detail-page-when-multiple-images-exist-display-them-using-either-a-carousel-slider-or-a-thumbnail-click-gallery-never-show-only-a-single-image-when-more-are-available",
+      "title": "Fix product image handling on the product detail page: when multiple images exist, display them using either a carousel/slider or a thumbnail-click gallery; never show only a single image when more are available.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-simple-super-admin-login-for-phase-1-add-an-admin-login-button-in-the-footer-before-login-admin-controls-are-hidden-after-login-an-admin-dashboard-becomes-available-include-an-admin-logout-action-do-not-expose-the-provided-password-in-frontend-source-code-or-in-any-public-canister-query-methods",
+      "title": "Implement a simple Super Admin login for Phase 1: add an “Admin Login” button in the footer; before login, admin controls are hidden; after login, an admin dashboard becomes available. Include an admin logout action. Do not expose the provided password in frontend source code or in any public canister query methods.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-phase-1-admin-product-manager-that-supports-add-edit-delete-products-with-fields-name-category-restricted-price-stock-minimum-order-quantity-bulk-order-price-optional-multiple-images-as-urls-for-phase-1-mvp-full-description-unlimited-changes-must-reflect-immediately-in-the-public-catalog-views-after-save",
+      "title": "Add a Phase 1 Admin Product Manager that supports Add/Edit/Delete products with fields: Name, Category (restricted), Price, Stock, Minimum order quantity, Bulk order price (optional), Multiple images (as URLs for Phase 1 MVP), Full description (unlimited). Changes must reflect immediately in the public catalog views after save.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-phase-1-order-now-with-two-options-1-order-via-website-a-checkout-form-capturing-full-name-mobile-number-full-address-city-state-pincode-with-product-details-auto-filled-and-quantity-editable-on-submit-store-the-order-in-the-backend-with-status-2-order-via-whatsapp-redirect-to-whatsapp-with-an-auto-generated-message-containing-product-name-price-and-quantity-defer-the-bulk-order-dealer-enquiry-flow-to-phase-2",
+      "title": "Implement Phase 1 “Order Now” with two options: (1) Order via Website: a checkout form capturing Full Name, Mobile Number, Full Address, City, State, Pincode, with product details auto-filled and quantity editable; on submit, store the order in the backend with status. (2) Order via WhatsApp: redirect to WhatsApp with an auto-generated message containing product name, price, and quantity. Defer the Bulk Order/Dealer Enquiry flow to Phase 2.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-phase-1-admin-order-management-a-list-view-of-website-orders-with-customer-details-product-details-quantity-created-time-and-status-allow-admin-to-update-status-between-pending-confirmed-completed-bulk-orders-section-should-be-present-but-empty-disabled-with-a-planned-for-phase-2-label-no-bulk-order-creation-in-phase-1",
+      "title": "Add Phase 1 Admin Order Management: a list view of website orders with customer details, product details, quantity, created time, and status; allow admin to update status between Pending, Confirmed, Completed. Bulk Orders section should be present but empty/disabled with a “Planned for Phase 2” label (no bulk order creation in Phase 1).",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-embed-a-google-map-on-a-contact-page-or-home-page-if-contact-is-not-implemented-using-the-provided-location-link-ensuring-it-loads-safely-and-does-not-crash-the-app-if-the-embed-fails",
+      "title": "Embed a Google Map on a Contact page (or Home page if Contact is not implemented) using the provided location link, ensuring it loads safely and does not crash the app if the embed fails.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-robust-error-handling-and-loading-states-for-all-phase-1-backend-calls-products-orders-admin-auth-and-ensure-the-app-remains-stable-under-invalid-inputs-e-g-missing-fields-invalid-quantity-network-canister-call-errors",
+      "title": "Add robust error handling and loading states for all Phase 1 backend calls (products, orders, admin auth) and ensure the app remains stable under invalid inputs (e.g., missing fields, invalid quantity, network/canister call errors).",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-admin-login-stays-fully-inside-the-website-ui-with-no-external-redirects-keep-a-small-admin-login-button-in-the-footer-and-when-clicked-it-must-open-an-in-app-modal-or-an-internal-route-same-site-layout-for-admin-authentication-after-successful-login-admin-controls-routes-become-visible-before-login-admin-controls-must-not-be-visible-to-normal-users",
+      "title": "Ensure Admin Login stays fully inside the website UI with no external redirects: keep a small “Admin Login” button in the footer, and when clicked it must open an in-app modal or an internal route (same site layout) for admin authentication; after successful login, admin controls/routes become visible; before login, admin controls must not be visible to normal users.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-admin-dashboard-to-be-more-attractive-and-professional-while-staying-lightweight-use-a-clean-card-style-dashboard-with-simple-icons-and-hover-only-micro-interactions-include-dashboard-options-cards-for-edit-text-edit-images-manage-products-orders-and-gallery-keep-a-neutral-professional-look-that-works-in-both-light-and-dark-mode",
+      "title": "Redesign the Admin Dashboard to be more attractive and professional while staying lightweight: use a clean card-style dashboard with simple icons and hover-only micro-interactions; include dashboard options/cards for Edit Text, Edit Images, Manage Products, Orders, and Gallery; keep a neutral professional look that works in both light and dark mode.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-home-page-hero-section-to-show-the-shop-name-in-big-bold-text-rajdhani-beej-bhandar-with-an-optional-subtitle-e-g-trusted-agricultural-products-store-the-hero-title-subtitle-must-be-editable-by-admin-and-must-be-supported-per-language-admin-can-set-values-separately-for-each-language",
+      "title": "Update the Home page hero section to show the shop name in big, bold text: “RAJDHANI BEEJ BHANDAR”, with an optional subtitle (e.g., “Trusted Agricultural Products Store”); the hero title/subtitle must be editable by admin and must be supported per language (admin can set values separately for each language).",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fully-fix-the-language-system-so-the-entire-website-content-changes-instantly-when-a-user-selects-a-language-no-full-reload-remembers-the-selected-language-and-defaults-to-english-supported-languages-must-include-hindi-english-tamil-telugu-kannada-gujarati-marathi-punjabi-bengali-and-keep-any-currently-supported-languages-already-present-this-must-apply-site-wide-to-menus-buttons-headings-forms-footer-text-and-all-product-facing-content-including-product-names-and-product-descriptions",
+      "title": "Fully fix the language system so the entire website content changes instantly when a user selects a language (no full reload), remembers the selected language, and defaults to English. Supported languages must include: Hindi, English, Tamil, Telugu, Kannada, Gujarati, Marathi, Punjabi, Bengali (and keep any currently-supported languages already present). This must apply site-wide to menus, buttons, headings, forms, footer text, and all product-facing content (including product names and product descriptions).",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-admin-tooling-to-manage-translations-content-per-language-from-the-dashboard-admins-must-be-able-to-edit-1-product-name-description-per-language-and-2-site-text-content-used-in-the-hero-title-subtitle-per-language-using-simple-forms-in-the-admin-area-translation-editing-must-be-easy-to-add-update-and-changes-must-reflect-immediately-in-public-pages-after-save",
+      "title": "Add admin tooling to manage translations/content per language from the dashboard: admins must be able to edit (1) product name/description per language and (2) site text content used in the hero (title/subtitle) per language, using simple forms in the admin area; translation editing must be easy to add/update and changes must reflect immediately in public pages after save.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-footer-branding-text-and-link-2026-built-with-love-using-caffeine-ai-from-the-website-after-removal-no-footer-text-or-link-should-mention-caffeine-ai",
+      "title": "Remove the footer branding text and link “© 2026. Built with love using caffeine.ai” from the website; after removal, no footer text or link should mention caffeine.ai.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-admin-only-feature-to-capture-and-persist-a-single-reference-website-url-the-site-the-user-wants-to-emulate-and-optional-design-notes-so-future-ui-work-can-explicitly-target-that-reference",
+      "title": "Add an admin-only feature to capture and persist a single “Reference Website” URL (the site the user wants to emulate) and optional design notes, so future UI work can explicitly target that reference.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expose-the-saved-reference-website-url-read-only-somewhere-in-the-existing-admin-area-as-a-reminder-for-future-redesign-work-e-g-a-small-card-section-on-the-admin-dashboard-or-on-the-planned-features-page",
+      "title": "Expose the saved Reference Website URL (read-only) somewhere in the existing admin area as a reminder for future redesign work (e.g., a small card/section on the Admin Dashboard or on the Planned Features page).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Phase 1 MVP first, then iterate to full professional production-ready version (phased delivery)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Multilingual UI with initial language selection popup; default English; supports Hindi, English, Tamil, Telugu, Kannada, Malayalam, Gujarati, Marathi, Punjabi, Bengali; admin can edit content per language",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Super Admin system: footer Admin Login button; admin-only visibility of controls; secure session + logout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Product catalog limited to categories: Pesticides, Herbicides, Insecticides, Fungicides, PGR, Seeds (no other categories)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Admin Product Manager (add/edit/delete) with fields: name, category, price, stock, min order qty, optional bulk price, multiple images, full description; changes reflect instantly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Product page behavior: multi-image carousel/thumbnail view when multiple images exist; show full description (optional read-more only for very long content)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Order system with 3 options: Website checkout form (stores orders + status workflow), WhatsApp redirect with prefilled message, Bulk Order/Dealer Enquiry form stored separately",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Admin Order Management разделы: separate Normal Orders vs Bulk Orders; status updates (Pending/Confirmed/Completed) for website orders",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Home page bottom Photo Gallery (Before Use / After Use) with admin add/delete/edit captions; lightweight performance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Google Map embed on Contact/Home page using provided location link",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Multilingual AI chatbot: answers product queries, guides ordering, suggests products; admin can add products/update chatbot knowledge",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Security/stability/performance requirements: avoid exposing sensitive data, prevent crashes/conflicts, optimize performance, robust error handling",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Fix Admin Login to be fully internal (popup or internal page), no external redirects; footer button; admin controls hidden until login; include logout",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Improve Admin Dashboard UI: card-style layout, icons for Edit Text/Edit Images/Manage Products/Orders/Gallery, light hover animations, professional neutral dark/light theme, lightweight/no lag",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Fix multilingual system site-wide: instant in-app language switch (no full reload), remember selection, default English; translate menus/buttons/headings/products/forms/footer; admin can edit per-language content and add translations from dashboard",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Home hero: display big bold shop name “RAJDHANI BEEJ BHANDAR” with optional subtitle; admin-editable and visible across all languages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Remove footer branding text: “© 2026. Built with love using caffeine.ai”",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Create a new site design/UX similar to a user-provided reference website link (match look & layout while keeping existing functionality and constraints)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "RAJDHANI BEEJ BHANDAR — Agricultural Products Shop (India)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
